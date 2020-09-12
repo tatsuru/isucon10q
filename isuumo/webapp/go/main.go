@@ -902,7 +902,7 @@ func searchEstateNazotte(c echo.Context) error {
 		estateIdsInBoundingBoxJoined,
 		coordinates.coordinatesToText(),
 	)
-	err = db.Select(&estatesInPolygon, query2)
+	err = db.Get(&estatesInPolygon, query2)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			c.Echo().Logger.Errorf("db access is failed on executing validate if estate is in polygon : %v", err)
