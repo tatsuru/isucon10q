@@ -601,7 +601,7 @@ func getChairSearchCondition(c echo.Context) error {
 }
 
 func getLowPricedChair(c echo.Context) error {
-	return c.JSON(http.StatusOK, ChairListResponse{Chairs: lowPricedChairs})
+	return c.JSON(http.StatusOK, EstateListResponse{Chairs: lowPricedChairs})
 }
 
 func initLowPricedChairs(retryCount int) error {
