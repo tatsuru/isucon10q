@@ -363,7 +363,7 @@ func postChair(c echo.Context) error {
 
 	c.Logger().Debugf("postChair: start process %d rows", len(records))
 
-	toInsert := make([]Chair, len(records))
+	toInsert := make([]*Chair, len(records))
 	for _, row := range records {
 		rm := RecordMapper{Record: row}
 		id := rm.NextInt()
@@ -383,7 +383,7 @@ func postChair(c echo.Context) error {
 			c.Logger().Errorf("failed to read record: %v", err)
 			return c.NoContent(http.StatusBadRequest)
 		}
-		toInsert = append(toInsert, Chair{
+		toInsert = append(toInsert, &Chair{
 			ID:          int64(id),
 			Name:        name,
 			Description: description,
