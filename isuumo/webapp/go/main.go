@@ -363,7 +363,7 @@ func postChair(c echo.Context) error {
 
 	c.Logger().Debugf("postChair: start process %d rows", len(records))
 
-	toInsert := make([]map[string]interface{}, len(records))
+	toInsert := make([]*Chair, len(records))
 	for _, row := range records {
 		rm := RecordMapper{Record: row}
 		id := rm.NextInt()
@@ -383,20 +383,20 @@ func postChair(c echo.Context) error {
 			c.Logger().Errorf("failed to read record: %v", err)
 			return c.NoContent(http.StatusBadRequest)
 		}
-		toInsert = append(toInsert, map[string]interface{}{
-			"id":          int64(id),
-			"name":        name,
-			"description": description,
-			"thumbnail":   thumbnail,
-			"price":       int64(price),
-			"height":      int64(height),
-			"width":       int64(width),
-			"depth":       int64(depth),
-			"color":       color,
-			"features":    features,
-			"kind":        kind,
-			"popularity":  int64(popularity),
-			"stock":       int64(stock),
+		toInsert = append(toInsert, &Chair{
+			ID:          int64(id),
+			Name:        name,
+			Description: description,
+			Thumbnail:   thumbnail,
+			Price:       int64(price),
+			Height:      int64(height),
+			Width:       int64(width),
+			Depth:       int64(depth),
+			Color:       color,
+			Features:    features,
+			Kind:        kind,
+			Popularity:  int64(popularity),
+			Stock:       int64(stock),
 		})
 	}
 	_, err = db.NamedExec("INSERT INTO chair(id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock) VALUES(:id, :name, :description, :thumbnail, :price, :height, :width, :depth, :color, :features, :kind, :popularity, :stock)", toInsert)
