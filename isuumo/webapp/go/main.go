@@ -245,7 +245,6 @@ func main() {
 	e.Logger.SetLevel(log.OFF)
 
 	// Middleware
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	// Initialize
