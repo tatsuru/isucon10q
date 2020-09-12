@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -239,6 +240,11 @@ func init() {
 }
 
 func main() {
+	// pprof
+	go func() {
+		log.Printf("%s\n", http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	// Echo instance
 	e := echo.New()
 	e.Logger.SetLevel(log.DEBUG)
