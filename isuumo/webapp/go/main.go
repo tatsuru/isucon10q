@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -306,6 +307,9 @@ func initialize(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
+
+	// 投機的にレプリ遅延解消待ち
+	time.Sleep(10)
 
 	return c.JSON(http.StatusOK, InitializeResponse{
 		Language: "go",
