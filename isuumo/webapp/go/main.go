@@ -884,6 +884,16 @@ func searchEstateNazotte(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	// 0件のときearly return
+	if len(estateIdsInBoundingBox) == 0 {
+		re := EstateSearchResponse{
+			Estates: []Estate{},
+			Count:   int64(0),
+		}
+
+		return c.JSON(http.StatusOK, re)
+	}
+
 	var estateIdsInBoundingBoxJoined = ""
 	for i, eid := range estateIdsInBoundingBox {
 		if i == 0 {
