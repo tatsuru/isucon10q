@@ -874,7 +874,33 @@ func searchEstateNazotte(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	estateIdsInBoundingBox := make([]string, len(estatesInBoundingBox))
+	for i, estate := range estatesInBoundingBox {
+		estateIdsInBoundingBox[i] = fmt.Sprintf("%d", estate.ID)
+	}
+
 	estatesInPolygon := []Estate{}
+	query2 := fmt.Sprintf(
+		`
+			SELECT * FROM estate 
+			WHERE 
+				id in (%s) AND 
+				ST_Contains(
+					ST_PolygonFromText(%s), 
+					ST_GeomFromText(CONCAT("POINT(", latitude, " ", longitude, ")"))
+				)
+		`,
+		strings.Join(estateIdsInBoundingBox, ", "),
+		coordinates.coordinatesToText(),
+	)
+	err = db.Get(&estatesInPolygon, query2)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			c.Echo().Logger.Errorf("db access is failed on executing validate if estate is in polygon : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+	}
+
 	for _, estate := range estatesInBoundingBox {
 		validatedEstate := Estate{}
 
