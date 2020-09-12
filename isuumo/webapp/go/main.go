@@ -850,6 +850,10 @@ func searchRecommendedEstateWithChair(c echo.Context) error {
 	return c.JSON(http.StatusOK, EstateListResponse{Estates: estates})
 }
 
+type EstateID struct {
+	id int64 `db:"id" json:"id"`
+}
+
 func searchEstateNazotte(c echo.Context) error {
 	coordinates := Coordinates{}
 	err := c.Bind(&coordinates)
@@ -863,9 +867,10 @@ func searchEstateNazotte(c echo.Context) error {
 	}
 
 	b := coordinates.getBoundingBox()
-	estatesInBoundingBox := []Estate{}
-	query := `SELECT * FROM estate WHERE latitude <= ? AND latitude >= ? AND longitude <= ? AND longitude >= ? ORDER BY popularity DESC, id ASC`
-	err = db.Select(&estatesInBoundingBox, query, b.BottomRightCorner.Latitude, b.TopLeftCorner.Latitude, b.BottomRightCorner.Longitude, b.TopLeftCorner.Longitude)
+
+	estateIdsInBoundingBox := []EstateID{}
+	query := `SELECT id FROM estate WHERE latitude <= ? AND latitude >= ? AND longitude <= ? AND longitude >= ? ORDER BY popularity DESC, id ASC`
+	err = db.Select(&estateIdsInBoundingBox, query, b.BottomRightCorner.Latitude, b.TopLeftCorner.Latitude, b.BottomRightCorner.Longitude, b.TopLeftCorner.Longitude)
 	if err == sql.ErrNoRows {
 		c.Echo().Logger.Infof("select * from estate where latitude ...", err)
 		return c.JSON(http.StatusOK, EstateSearchResponse{Count: 0, Estates: []Estate{}})
@@ -874,9 +879,13 @@ func searchEstateNazotte(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	estateIdsInBoundingBox := make([]string, len(estatesInBoundingBox))
-	for i, estate := range estatesInBoundingBox {
-		estateIdsInBoundingBox[i] = fmt.Sprintf("%d", estate.ID)
+	var estateIdsInBoundingBoxJoined = ""
+	for i, eid := range estateIdsInBoundingBox {
+		if i == 0 {
+			estateIdsInBoundingBoxJoined = fmt.Sprintf("%d", eid)
+		} else {
+			estateIdsInBoundingBoxJoined = fmt.Sprintf("%s, %d", estateIdsInBoundingBoxJoined, eid)
+		}
 	}
 
 	estatesInPolygon := []Estate{}
@@ -890,7 +899,7 @@ func searchEstateNazotte(c echo.Context) error {
 					ST_GeomFromText(CONCAT("POINT(", latitude, " ", longitude, ")"))
 				)
 		`,
-		strings.Join(estateIdsInBoundingBox, ", "),
+		estateIdsInBoundingBoxJoined,
 		coordinates.coordinatesToText(),
 	)
 	err = db.Get(&estatesInPolygon, query2)
