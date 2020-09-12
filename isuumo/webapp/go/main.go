@@ -379,43 +379,43 @@ func initialize(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
-		_, err = db.Exec(`UPDATE chair SET door_height_range = 0 WHERE door_height < 80`)
+		_, err = db.Exec(`UPDATE estate SET door_height_range = 0 WHERE door_height < 80`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		_, err = db.Exec(`UPDATE chair SET door_height_range = 1 WHERE door_height >= 80 AND door_height < 110`)
+		_, err = db.Exec(`UPDATE estate SET door_height_range = 1 WHERE door_height >= 80 AND door_height < 110`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		_, err = db.Exec(`UPDATE chair SET door_height_range = 2 WHERE door_height >= 110 AND door_height < 150`)
+		_, err = db.Exec(`UPDATE estate SET door_height_range = 2 WHERE door_height >= 110 AND door_height < 150`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		_, err = db.Exec(`UPDATE chair SET door_height_range = 3 WHERE door_height >= 150`)
+		_, err = db.Exec(`UPDATE estate SET door_height_range = 3 WHERE door_height >= 150`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
-		_, err = db.Exec(`UPDATE chair SET door_width_range = 0 WHERE door_width < 80`)
+		_, err = db.Exec(`UPDATE estate SET door_width_range = 0 WHERE door_width < 80`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		_, err = db.Exec(`UPDATE chair SET door_width_range = 1 WHERE door_width >= 80 AND door_width < 110`)
+		_, err = db.Exec(`UPDATE estate SET door_width_range = 1 WHERE door_width >= 80 AND door_width < 110`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		_, err = db.Exec(`UPDATE chair SET door_width_range = 2 WHERE door_width >= 110 AND door_width < 150`)
+		_, err = db.Exec(`UPDATE estate SET door_width_range = 2 WHERE door_width >= 110 AND door_width < 150`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
-		_, err = db.Exec(`UPDATE chair SET door_width_range = 3 WHERE door_width >= 150`)
+		_, err = db.Exec(`UPDATE estate SET door_width_range = 3 WHERE door_width >= 150`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
