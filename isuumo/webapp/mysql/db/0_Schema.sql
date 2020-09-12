@@ -16,13 +16,17 @@ CREATE TABLE isuumo.estate
     rent        INTEGER             NOT NULL,
     door_height INTEGER             NOT NULL,
     door_width  INTEGER             NOT NULL,
+    door_height_range INTEGER               ,
+    door_width_range  INTEGER               ,
     features    VARCHAR(64)         NOT NULL,
     popularity  INTEGER             NOT NULL,
 
     KEY `by_door_width` (door_width),
     KEY `by_door_height` (door_height),
     KEY `by_rent` (rent),
-    KEY `by_popularity` (popularity) 
+    KEY `by_popularity` (popularity),
+    KEY `by_door_width_range` (door_width_range),
+    KEY `by_door_height_range` (door_height_range),
 );
 
 CREATE TABLE isuumo.chair

@@ -377,6 +377,48 @@ func initialize(c echo.Context) error {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
+
+		err := db.Exec(&ids, `UPDATE chair SET door_height_range = 0 WHERE door_height < 80`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET door_height_range = 1 WHERE door_height >= 80 AND door_height < 110`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET door_height_range = 2 WHERE door_height >= 110 AND door_height < 150`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET door_height_range = 3 WHERE door_height >= 150`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		err := db.Exec(&ids, `UPDATE chair SET door_width_range = 0 WHERE door_width < 80`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET door_width_range = 1 WHERE door_width >= 80 AND door_width < 110`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET door_width_range = 2 WHERE door_width >= 110 AND door_width < 150`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET door_width_range = 3 WHERE door_width >= 150`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
 	}
 
 	return c.JSON(http.StatusOK, InitializeResponse{
@@ -729,7 +771,9 @@ func postEstate(c echo.Context) error {
 			c.Logger().Errorf("failed to read record: %v", err)
 			return c.NoContent(http.StatusBadRequest)
 		}
-		_, err := tx.Exec("INSERT INTO estate(id, name, description, thumbnail, address, latitude, longitude, rent, door_height, door_width, features, popularity) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", id, name, description, thumbnail, address, latitude, longitude, rent, doorHeight, doorWidth, features, popularity)
+		doorHeightRange := getRangeId(doorHeight)
+		doorWidthRange := getRangeId(doorWidth)
+		_, err := tx.Exec("INSERT INTO estate(id, name, description, thumbnail, address, latitude, longitude, rent, door_height, door_width, features, popularity, door_height_range, door_width_range) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, name, description, thumbnail, address, latitude, longitude, rent, doorHeight, doorWidth, features, popularity, doorHeightRange, doorWidthRange)
 		if err != nil {
 			c.Logger().Errorf("failed to insert estate: %v", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -747,37 +791,13 @@ func searchEstates(c echo.Context) error {
 	params := make([]interface{}, 0)
 
 	if c.QueryParam("doorHeightRangeId") != "" {
-		doorHeight, err := getRange(estateSearchCondition.DoorHeight, c.QueryParam("doorHeightRangeId"))
-		if err != nil {
-			c.Echo().Logger.Infof("doorHeightRangeID invalid, %v : %v", c.QueryParam("doorHeightRangeId"), err)
-			return c.NoContent(http.StatusBadRequest)
-		}
-
-		if doorHeight.Min != -1 {
-			conditions = append(conditions, "door_height >= ?")
-			params = append(params, doorHeight.Min)
-		}
-		if doorHeight.Max != -1 {
-			conditions = append(conditions, "door_height < ?")
-			params = append(params, doorHeight.Max)
-		}
+		conditions = append(conditions, "door_height_range = ?")
+		params = append(params, c.QueryParam("doorHeightRangeId"))
 	}
 
 	if c.QueryParam("doorWidthRangeId") != "" {
-		doorWidth, err := getRange(estateSearchCondition.DoorWidth, c.QueryParam("doorWidthRangeId"))
-		if err != nil {
-			c.Echo().Logger.Infof("doorWidthRangeID invalid, %v : %v", c.QueryParam("doorWidthRangeId"), err)
-			return c.NoContent(http.StatusBadRequest)
-		}
-
-		if doorWidth.Min != -1 {
-			conditions = append(conditions, "door_width >= ?")
-			params = append(params, doorWidth.Min)
-		}
-		if doorWidth.Max != -1 {
-			conditions = append(conditions, "door_width < ?")
-			params = append(params, doorWidth.Max)
-		}
+		conditions = append(conditions, "door_width_range = ?")
+		params = append(params, c.QueryParam("doorWidthRangeId"))
 	}
 
 	if c.QueryParam("rentRangeId") != "" {
