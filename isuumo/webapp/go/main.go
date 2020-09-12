@@ -914,7 +914,6 @@ func searchEstateNazotte(c echo.Context) error {
 	if err != nil {
 		if err != sql.ErrNoRows {
 			c.Echo().Logger.Errorf("db access is failed on executing validate if estate is in polygon : %v", err)
-			c.Echo().Logger.Errorf("dead query is %s", query2)
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
