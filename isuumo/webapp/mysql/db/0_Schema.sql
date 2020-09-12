@@ -33,9 +33,11 @@ CREATE TABLE isuumo.chair
     thumbnail   VARCHAR(128)    NOT NULL,
     price       INTEGER         NOT NULL,
     height      INTEGER         NOT NULL,
-    height_range INTEGER                 ,
+    height_range INTEGER                ,
     width       INTEGER         NOT NULL,
+    width_range INTEGER                 ,
     depth       INTEGER         NOT NULL,
+    depth_range INTEGER                 ,
     color       VARCHAR(64)     NOT NULL,
     features    VARCHAR(64)     NOT NULL,
     kind        VARCHAR(64)     NOT NULL,
@@ -50,5 +52,7 @@ CREATE TABLE isuumo.chair
     KEY `by_kind` (kind),
     KEY `by_popularity` (popularity),
     KEY `by_stock` (stock),
-    KEY `by_height_range` (height_range)
+    KEY `by_height_range` (height_range),
+    KEY `by_width_range` (width_range),
+    KEY `by_depth_range` (depth_range)
 );
