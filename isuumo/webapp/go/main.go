@@ -904,9 +904,11 @@ func searchEstateNazotte(c echo.Context) error {
 					ST_GeomFromText(CONCAT("POINT(", latitude, " ", longitude, ")"))
 				)
 			ORDER BY popularity DESC, id ASC
+			LIMIT %d
 		`,
 		estateIdsInBoundingBoxJoined,
 		coordinates.coordinatesToText(),
+		NazotteLimit,
 	)
 	err = db.Select(&estatesInPolygon, query2)
 	if err != nil {
@@ -916,14 +918,10 @@ func searchEstateNazotte(c echo.Context) error {
 		}
 	}
 
-	var re EstateSearchResponse
-	re.Estates = []Estate{}
-	if len(estatesInPolygon) > NazotteLimit {
-		re.Estates = estatesInPolygon[:NazotteLimit]
-	} else {
-		re.Estates = estatesInPolygon
+	re := EstateSearchResponse{
+		Estates: estatesInPolygon,
+		Count:   int64(len(estatesInPolygon)),
 	}
-	re.Count = int64(len(re.Estates))
 
 	return c.JSON(http.StatusOK, re)
 }
