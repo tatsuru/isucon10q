@@ -315,6 +315,7 @@ func initialize(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 
+		var err Error
 		_, err = db.Exec(`UPDATE chair SET height_range = 0 WHERE height < 80`)
 		if err != nil {
 			c.Logger().Errorf("Initialize script error : %v", err)
