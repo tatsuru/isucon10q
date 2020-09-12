@@ -363,8 +363,8 @@ func postChair(c echo.Context) error {
 
 	c.Logger().Debugf("postChair: start process %d rows", len(records))
 
-	toInsert := make([]Chair, len(records))
-	for i, row := range records {
+	toInsert := make([]Chair, 0)
+	for _, row := range records {
 		rm := RecordMapper{Record: row}
 		id := rm.NextInt()
 		name := rm.NextString()
@@ -383,7 +383,7 @@ func postChair(c echo.Context) error {
 			c.Logger().Errorf("failed to read record: %v", err)
 			return c.NoContent(http.StatusBadRequest)
 		}
-		toInsert[i] = Chair{
+		toInsert = append(toInsert, Chair{
 			ID:          int64(id),
 			Name:        name,
 			Description: description,
@@ -397,7 +397,7 @@ func postChair(c echo.Context) error {
 			Kind:        kind,
 			Popularity:  int64(popularity),
 			Stock:       int64(stock),
-		}
+		})
 	}
 	_, err = db.NamedExec("INSERT INTO chair(id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock) VALUES(:id, :name, :description, :thumbnail, :price, :height, :width, :depth, :color, :features, :kind, :popularity, :stock)", toInsert)
 	if err != nil {
