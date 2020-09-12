@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+root=$(cd "$(dirname "$0")" && cd .. && pwd)
+
+command='cat /var/log/nginx/access.log.ltsv | alp ltsv -r --sort=sum --apptime-label=apptime --reqtime-label=duration --uri-label=request -m "/api/chair/[0-9]+,/api/chair/buy/.+,/api/estate/[^(nazotte|search|low_priced)],/api/estate/req_doc/.+,/api/recommended_estate/.+,/images/chair/.+,/images/estate/[0-9a-z].+,/_next/static/chunks/.+"'
+
+ssh -t isucon-server1 "$command"
+
+
