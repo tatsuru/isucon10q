@@ -23,6 +23,8 @@ import (
 const Limit = 20
 const NazotteLimit = 50
 
+var lowPricedChairs = make([]Chair, 0, Limit)
+
 var db *sqlx.DB
 var mySQLConnectionData *MySQLConnectionEnv
 var chairSearchCondition ChairSearchCondition
@@ -308,6 +310,8 @@ func initialize(c echo.Context) error {
 		}
 	}
 
+	initLowPricedChairs(0)
+
 	return c.JSON(http.StatusOK, InitializeResponse{
 		Language: "go",
 	})
@@ -391,6 +395,9 @@ func postChair(c echo.Context) error {
 		c.Logger().Errorf("failed to commit tx: %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
+
+	initLowPricedChairs(0)
+
 	return c.NoContent(http.StatusCreated)
 }
 
@@ -579,6 +586,11 @@ func buyChair(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	// 椅子の在庫が無くなったらlowPricedも更新する
+	if chair.Stock-1 == 0 {
+		initLowPricedChairs(0)
+	}
+
 	return c.NoContent(http.StatusOK)
 }
 
@@ -587,19 +599,19 @@ func getChairSearchCondition(c echo.Context) error {
 }
 
 func getLowPricedChair(c echo.Context) error {
-	var chairs []Chair
-	query := `SELECT * FROM chair WHERE stock > 0 ORDER BY price ASC, id ASC LIMIT ?`
-	err := db.Select(&chairs, query, Limit)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			c.Logger().Error("getLowPricedChair not found")
-			return c.JSON(http.StatusOK, ChairListResponse{[]Chair{}})
-		}
-		c.Logger().Errorf("getLowPricedChair DB execution error : %v", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+	return c.JSON(http.StatusOK, EstateListResponse{Chairs: lowPricedChairs})
+}
 
-	return c.JSON(http.StatusOK, ChairListResponse{Chairs: chairs})
+func initLowPricedChairs(retryCount int) error {
+	if retryCount > 10 {
+		panic(`failed to init lowPricedChairs`)
+	}
+	query := `SELECT * FROM chair WHERE stock > 0 ORDER BY price ASC, id ASC LIMIT ?`
+	err := db.Select(&lowPricedChairs, query, Limit)
+	if err != nil {
+		initLowPricedEstates(retryCount + 1)
+	}
+	return nil
 }
 
 func getEstateDetail(c echo.Context) error {
