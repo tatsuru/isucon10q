@@ -363,7 +363,7 @@ func postChair(c echo.Context) error {
 
 	c.Logger().Debugf("postChair: start process %d rows", len(records))
 
-	toInsert := make([]Chair, 0)
+	toInsert := make([]Chair, 0, len(records))
 	for _, row := range records {
 		rm := RecordMapper{Record: row}
 		id := rm.NextInt()
@@ -399,6 +399,7 @@ func postChair(c echo.Context) error {
 			Stock:       int64(stock),
 		})
 	}
+	c.Logger().Debugf("inserting: %#v", toInsert)
 	_, err = db.NamedExec("INSERT INTO chair(id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock) VALUES(:id, :name, :description, :thumbnail, :price, :height, :width, :depth, :color, :features, :kind, :popularity, :stock)", toInsert)
 	if err != nil {
 		c.Logger().Errorf("failed to insert chair: %v", err)
