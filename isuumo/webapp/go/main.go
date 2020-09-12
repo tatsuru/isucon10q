@@ -23,6 +23,8 @@ import (
 const Limit = 20
 const NazotteLimit = 50
 
+var lowPricedEstates = make([]Estate, 0, Limit)
+
 var db *sqlx.DB
 var mySQLConnectionData *MySQLConnectionEnv
 var chairSearchCondition ChairSearchCondition
@@ -307,6 +309,8 @@ func initialize(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
+
+	initLowPricedEstates(0)
 
 	return c.JSON(http.StatusOK, InitializeResponse{
 		Language: "go",
@@ -799,19 +803,19 @@ func searchEstates(c echo.Context) error {
 }
 
 func getLowPricedEstate(c echo.Context) error {
-	estates := make([]Estate, 0, Limit)
-	query := `SELECT * FROM estate ORDER BY rent ASC, id ASC LIMIT ?`
-	err := db.Select(&estates, query, Limit)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			c.Logger().Error("getLowPricedEstate not found")
-			return c.JSON(http.StatusOK, EstateListResponse{[]Estate{}})
-		}
-		c.Logger().Errorf("getLowPricedEstate DB execution error : %v", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+	return c.JSON(http.StatusOK, EstateListResponse{Estates: lowPricedEstates})
+}
 
-	return c.JSON(http.StatusOK, EstateListResponse{Estates: estates})
+func initLowPricedEstates(retryCount int) error {
+	if retryCount > 10 {
+		panic(`failed to init lowPricedEstates`)
+	}
+	query := `SELECT * FROM estate ORDER BY rent ASC, id ASC LIMIT ?`
+	err := db.Select(&lowPricedEstates, query, Limit)
+	if err != nil {
+		initLowPricedEstates(retryCount + 1)
+	}
+	return nil
 }
 
 func searchRecommendedEstateWithChair(c echo.Context) error {
