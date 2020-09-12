@@ -692,6 +692,9 @@ func postEstate(c echo.Context) error {
 		c.Logger().Errorf("failed to commit tx: %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
+	// 物件情報が登録されたらlowPricedのキャッシュを更新する
+	// 追加された物件の価格を見るなどもう少し賢くやっても良いかもしれない?
+	initLowPricedEstates(0)
 	return c.NoContent(http.StatusCreated)
 }
 
