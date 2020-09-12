@@ -9,14 +9,14 @@ branch=${1-master}
 go="GOROOT=/home/isucon/local/go PATH=$PATH:/home/isucon/local/go/bin/ go"
 
 command="cd /home/isucon/isucon10q/isuumo/webapp/go && git remote update && git checkout $branch && git pull && $go get && $go build -o isuumo && sudo systemctl restart isuumo.go.service"
-#rotate_nginx="sudo mv /var/log/nginx/access.log /var/log/nginx/access.log.$now && sudo ln -sf /var/log/nginx/access.log.$now /var/log/nginx/access.log.latest; sudo systemctl reload nginx.service"
+rotate_nginx="sudo mv /var/log/nginx/access.log.ltsv /var/log/nginx/access.log.ltsv.$now && sudo ln -sf /var/log/nginx/access.log.ltsv.$now /var/log/nginx/access.log.ltsv.latest; sudo systemctl reload nginx.service"
 #rotate_mysql="sudo mv /var/log/mariadb/slow.log /var/log/mariadb/slow.log.$now && sudo ln -sf /var/log/mariadb/slow.log.$now /var/log/mariadb/slow.log.latest; mysqladmin -uisucon -pisucon flush-logs"
 
 ssh isucon-server1 "$command"
 ssh isucon-server2 "$command"
 ssh isucon-server3 "$command"
 
-#ssh isucon@isucon-server1 "$rotate_nginx"
+ssh isucon@isucon-server1 "$rotate_nginx"
 # ssh isucon@isucon-server2 "$rotate_nginx"
 # ssh isucon@isucon-server3 "$rotate_nginx"
 # ssh isucon@isucon-server1 "$rotate_mysql"
