@@ -869,7 +869,7 @@ func searchEstateNazotte(c echo.Context) error {
 	b := coordinates.getBoundingBox()
 
 	estateIdsInBoundingBox := []EstateID{}
-	query := `SELECT id FROM estate WHERE latitude <= ? AND latitude >= ? AND longitude <= ? AND longitude >= ?`
+	query := `SELECT id FROM estate WHERE latitude <= ? AND latitude >= ? AND longitude <= ? AND longitude >= ? ORDER BY popularity DESC, id ASC`
 	err = db.Select(&estateIdsInBoundingBox, query, b.BottomRightCorner.Latitude, b.TopLeftCorner.Latitude, b.BottomRightCorner.Longitude, b.TopLeftCorner.Longitude)
 	if err == sql.ErrNoRows {
 		c.Echo().Logger.Infof("select * from estate where latitude ...", err)
@@ -898,7 +898,6 @@ func searchEstateNazotte(c echo.Context) error {
 					ST_PolygonFromText(%s), 
 					ST_GeomFromText(CONCAT("POINT(", latitude, " ", longitude, ")"))
 				)
-			ORDER BY popularity DESC, id ASC
 		`,
 		estateIdsInBoundingBoxJoined,
 		coordinates.coordinatesToText(),
