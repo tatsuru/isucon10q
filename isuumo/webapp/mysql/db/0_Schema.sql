@@ -17,7 +17,12 @@ CREATE TABLE isuumo.estate
     door_height INTEGER             NOT NULL,
     door_width  INTEGER             NOT NULL,
     features    VARCHAR(64)         NOT NULL,
-    popularity  INTEGER             NOT NULL
+    popularity  INTEGER             NOT NULL,
+
+    KEY (door_width) by_door_width,
+    KEY (door_height) by_door_height,
+    KEY (rent) by_rent,
+    KEY (popularity) by_popularity
 );
 
 CREATE TABLE isuumo.chair
@@ -34,5 +39,14 @@ CREATE TABLE isuumo.chair
     features    VARCHAR(64)     NOT NULL,
     kind        VARCHAR(64)     NOT NULL,
     popularity  INTEGER         NOT NULL,
-    stock       INTEGER         NOT NULL
+    stock       INTEGER         NOT NULL,
+
+    KEY (price) by_price,
+    KEY (height) by_height,
+    KEY (width) by_width,
+    KEY (depth) by_depth,
+    KEY (color) by_color,
+    KEY (kind) by_kind,
+    KEY (popularity) by_popularity,
+    KEY (stock) by_stock
 );
