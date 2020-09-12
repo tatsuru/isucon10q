@@ -241,10 +241,9 @@ func init() {
 func main() {
 	// Echo instance
 	e := echo.New()
-	e.Logger.SetLevel(log.DEBUG)
+	e.Logger.SetLevel(log.OFF)
 
 	// Middleware
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	// Initialize
