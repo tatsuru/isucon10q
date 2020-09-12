@@ -851,7 +851,7 @@ func searchRecommendedEstateWithChair(c echo.Context) error {
 }
 
 type EstateID struct {
-	ID int64 `db:"id" json:"id"`
+	id int64 `db:"id" json:"id"`
 }
 
 func searchEstateNazotte(c echo.Context) error {
