@@ -2,13 +2,13 @@
 Description=isuumo.go
 
 [Service]
-WorkingDirectory=/home/isucon/isuumo/webapp/go
+WorkingDirectory=/home/isucon/isucon10q/isuumo/webapp/go
 EnvironmentFile=/home/isucon/env.sh
-PIDFile=/home/isucon/isuumo/webapp/go/server.pid
+PIDFile=/home/isucon/isucon10q/isuumo/webapp/go/server.pid
 
 User=isucon
 Group=isucon
-ExecStart=/home/isucon/isuumo/webapp/go/isuumo
+ExecStart=/home/isucon/isucon10q/isuumo/webapp/go/isuumo
 ExecStop=/bin/kill -s QUIT $MAINPID
 
 Restart   = always
