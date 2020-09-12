@@ -365,6 +365,19 @@ func getChairDetail(c echo.Context) error {
 	return c.JSON(http.StatusOK, chair)
 }
 
+func getRangeId (length: int64): string {
+	if length < 80 {
+		return "0"
+	}
+	if length < 110 {
+		return "1"
+	}
+	if length < 150 {
+		return "2"
+	}
+	return "3"
+}
+
 func postChair(c echo.Context) error {
 	header, err := c.FormFile("chairs")
 	if err != nil {
@@ -408,7 +421,8 @@ func postChair(c echo.Context) error {
 			c.Logger().Errorf("failed to read record: %v", err)
 			return c.NoContent(http.StatusBadRequest)
 		}
-		_, err := tx.Exec("INSERT INTO chair(id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock)
+		height_range := getRangeId(height)
+		_, err := tx.Exec("INSERT INTO chair(id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock, height_range) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock, height_range)
 		if err != nil {
 			c.Logger().Errorf("failed to insert chair: %v", err)
 			return c.NoContent(http.StatusInternalServerError)
