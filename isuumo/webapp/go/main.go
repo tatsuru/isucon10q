@@ -361,6 +361,8 @@ func postChair(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	c.Logger().Debugf("postChair: start process %d rows", len(records))
+
 	tx, err := db.Begin()
 	if err != nil {
 		c.Logger().Errorf("failed to begin tx: %v", err)
@@ -658,6 +660,8 @@ func postEstate(c echo.Context) error {
 		c.Logger().Errorf("failed to read csv: %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
+
+	c.Logger().Debugf("postEstate: start process %d rows", len(records))
 
 	tx, err := db.Begin()
 	if err != nil {
