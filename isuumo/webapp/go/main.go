@@ -882,9 +882,9 @@ func searchEstateNazotte(c echo.Context) error {
 	var estateIdsInBoundingBoxJoined = ""
 	for i, eid := range estateIdsInBoundingBox {
 		if i == 0 {
-			estateIdsInBoundingBoxJoined = fmt.Sprintf("%d", eid)
+			estateIdsInBoundingBoxJoined = fmt.Sprintf("%d", eid.ID)
 		} else {
-			estateIdsInBoundingBoxJoined = fmt.Sprintf("%s, %d", estateIdsInBoundingBoxJoined, eid)
+			estateIdsInBoundingBoxJoined = fmt.Sprintf("%s, %d", estateIdsInBoundingBoxJoined, eid.ID)
 		}
 	}
 
