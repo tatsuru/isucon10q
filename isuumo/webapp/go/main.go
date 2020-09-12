@@ -309,7 +309,7 @@ func initialize(c echo.Context) error {
 	}
 
 	// 投機的にレプリ遅延解消待ち
-	time.Sleep(10)
+	time.Sleep(time.Second * 5)
 
 	return c.JSON(http.StatusOK, InitializeResponse{
 		Language: "go",
