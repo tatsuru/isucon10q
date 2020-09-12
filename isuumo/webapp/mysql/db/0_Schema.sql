@@ -26,7 +26,7 @@ CREATE TABLE isuumo.estate
     KEY `by_rent` (rent),
     KEY `by_popularity` (popularity),
     KEY `by_door_width_range` (door_width_range),
-    KEY `by_door_height_range` (door_height_range),
+    KEY `by_door_height_range` (door_height_range)
 );
 
 CREATE TABLE isuumo.chair
