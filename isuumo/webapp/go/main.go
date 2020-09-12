@@ -40,6 +40,7 @@ type Chair struct {
 	Thumbnail   string `db:"thumbnail" json:"thumbnail"`
 	Price       int64  `db:"price" json:"price"`
 	Height      int64  `db:"height" json:"height"`
+	HeightRange int64  `db:"height_range" json:"-"`
 	Width       int64  `db:"width" json:"width"`
 	Depth       int64  `db:"depth" json:"depth"`
 	Color       string `db:"color" json:"color"`
@@ -311,6 +312,27 @@ func initialize(c echo.Context) error {
 			c.Logger().Errorf("Initialize script error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
+
+		err := db.Exec(&ids, `UPDATE chair SET height_range = 0 WHERE height < 80`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET height_range = 1 WHERE height >= 80 AND height < 110`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET height_range = 2 WHERE height >= 110 AND height < 150`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
+		err := db.Exec(&ids, `UPDATE chair SET height_range = 3 WHERE height >= 150`)
+		if err != nil {
+			c.Logger().Errorf("Initialize script error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
 	}
 
 	return c.JSON(http.StatusOK, InitializeResponse{
@@ -421,20 +443,8 @@ func searchChairs(c echo.Context) error {
 	}
 
 	if c.QueryParam("heightRangeId") != "" {
-		chairHeight, err := getRange(chairSearchCondition.Height, c.QueryParam("heightRangeId"))
-		if err != nil {
-			c.Echo().Logger.Infof("heightRangeIf invalid, %v : %v", c.QueryParam("heightRangeId"), err)
-			return c.NoContent(http.StatusBadRequest)
-		}
-
-		if chairHeight.Min != -1 {
-			conditions = append(conditions, "height >= ?")
-			params = append(params, chairHeight.Min)
-		}
-		if chairHeight.Max != -1 {
-			conditions = append(conditions, "height < ?")
-			params = append(params, chairHeight.Max)
-		}
+		conditions = append(conditions, "height_range = ?")
+		params = append(params, c.QueryParam("heightRangeId"))
 	}
 
 	if c.QueryParam("widthRangeId") != "" {
